@@ -118,8 +118,8 @@
     Paddle.prototype.update = function() {};
     Paddle.prototype.collide = function(other) {};
 
-    Paddle.prototype.moveUp = function() { this.y -= 10; };
-    Paddle.prototype.moveDown = function() { this.y += 10; };
+    Paddle.prototype.moveUp = function() { this.y -= 1; };
+    Paddle.prototype.moveDown = function() { this.y += 1; };
 
     window.addEventListener("load", function() {
         var canvas = document.getElementById("c");
@@ -138,19 +138,63 @@
             draw(ctx, scene);
         }, 1000 / FRAME_RATE);
 
+        leftPaddle.keyboardTimer = null;
+        rightPaddle.keyboardTimer = null;
+
         window.addEventListener("keydown", function(e) {
             switch(e.keyCode) {
             case 38:
-                rightPaddle.moveUp();
+                if (rightPaddle.keyboardTimer) {
+                    clearInterval(rightPaddle.keyboardTimer);
+                }
+
+                rightPaddle.keyboardTimer = setInterval(function() {
+                    rightPaddle.moveUp();
+                }, 1000 / FRAME_RATE);
                 break;
             case 40:
-                rightPaddle.moveDown();
+                if (rightPaddle.keyboardTimer) {
+                    clearInterval(rightPaddle.keyboardTimer);
+                }
+
+                rightPaddle.keyboardTimer = setInterval(function() {
+                    rightPaddle.moveDown();
+                }, 1000 / FRAME_RATE);
                 break;
             case 65:
-                leftPaddle.moveUp();
+                if (leftPaddle.keyboardTimer) {
+                    clearInterval(leftPaddle.keyboardTimer);
+                }
+
+                leftPaddle.keyboardTimer = setInterval(function() {
+                    leftPaddle.moveUp();
+                }, 1000 / FRAME_RATE);
                 break;
             case 90:
-                leftPaddle.moveDown();
+                if (leftPaddle.keyboardTimer) {
+                    clearInterval(leftPaddle.keyboardTimer);
+                }
+
+                leftPaddle.keyboardTimer = setInterval(function() {
+                    leftPaddle.moveDown();
+                }, 1000 / FRAME_RATE);
+                break;
+            }
+        });
+
+        window.addEventListener("keyup", function(e) {
+            switch (e.keyCode) {
+            case 38:
+            case 40:
+                if (rightPaddle.keyboardTimer) {
+                    clearInterval(rightPaddle.keyboardTimer);
+                }
+                break;
+            case 65:
+            case 90:
+                if (leftPaddle.keyboardTimer) {
+                    clearInterval(leftPaddle.keyboardTimer);
+                }
                 break;
             }
         });
