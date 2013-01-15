@@ -6,6 +6,7 @@
     var BALL_SIZE = 25;
     var PADDLE_WIDTH = 20;
     var PADDLE_HEIGHT = 100;
+    var PADDLE_FREQUENCY = 4;
 
     var boardHeight;
     var boardWidth;
@@ -118,8 +119,16 @@
     Paddle.prototype.update = function() {};
     Paddle.prototype.collide = function(other) {};
 
-    Paddle.prototype.moveUp = function() { this.y -= 1; };
-    Paddle.prototype.moveDown = function() { this.y += 1; };
+    Paddle.prototype.moveUp = function() {
+        if (this.y > 0) {
+            this.y -= 1;
+        }
+    };
+    Paddle.prototype.moveDown = function() {
+        if (this.y + this.height < boardHeight) {
+            this.y += 1;
+        }
+    };
 
     window.addEventListener("load", function() {
         var canvas = document.getElementById("c");
@@ -150,7 +159,7 @@
 
                 rightPaddle.keyboardTimer = setInterval(function() {
                     rightPaddle.moveUp();
-                }, 1000 / FRAME_RATE);
+                }, PADDLE_FREQUENCY);
                 break;
             case 40:
                 if (rightPaddle.keyboardTimer) {
@@ -159,7 +168,7 @@
 
                 rightPaddle.keyboardTimer = setInterval(function() {
                     rightPaddle.moveDown();
-                }, 1000 / FRAME_RATE);
+                }, PADDLE_FREQUENCY);
                 break;
             case 65:
                 if (leftPaddle.keyboardTimer) {
@@ -168,7 +177,7 @@
 
                 leftPaddle.keyboardTimer = setInterval(function() {
                     leftPaddle.moveUp();
-                }, 1000 / FRAME_RATE);
+                }, PADDLE_FREQUENCY);
                 break;
             case 90:
                 if (leftPaddle.keyboardTimer) {
@@ -177,7 +186,7 @@
 
                 leftPaddle.keyboardTimer = setInterval(function() {
                     leftPaddle.moveDown();
-                }, 1000 / FRAME_RATE);
+                }, PADDLE_FREQUENCY);
                 break;
             }
         });
