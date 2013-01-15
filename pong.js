@@ -118,6 +118,9 @@
     Paddle.prototype.update = function() {};
     Paddle.prototype.collide = function(other) {};
 
+    Paddle.prototype.moveUp = function() { this.y -= 10; };
+    Paddle.prototype.moveDown = function() { this.y += 10; };
+
     window.addEventListener("load", function() {
         var canvas = document.getElementById("c");
         var ctx = canvas.getContext("2d");
@@ -134,5 +137,22 @@
             update(scene);
             draw(ctx, scene);
         }, 1000 / FRAME_RATE);
+
+        window.addEventListener("keydown", function(e) {
+            switch(e.keyCode) {
+            case 38:
+                rightPaddle.moveUp();
+                break;
+            case 40:
+                rightPaddle.moveDown();
+                break;
+            case 65:
+                leftPaddle.moveUp();
+                break;
+            case 90:
+                leftPaddle.moveDown();
+                break;
+            }
+        });
     });
 }());
