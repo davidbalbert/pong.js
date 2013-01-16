@@ -11,16 +11,42 @@
     var boardHeight;
     var boardWidth;
 
-    function combinations(nums) {
-        var combos = [];
-        for (var i = 0; i < nums.length - 1; i++) {
-            for (var j = i + 1; j < nums.length; j++) {
-                combos.push([nums[i], nums[j]]);
-            }
+    function reduce(acc, arr, f) {
+        for (var i = 0; i < arr.length; i++) {
+            acc = f(acc, arr[i]);
         }
-
-        return combos;
+        return acc;
     };
+
+    function map(arr, f) {
+        return reduce([], arr, function(acc, e) {
+            acc.push(f(e));
+            return acc;
+        });
+    };
+
+
+    function range(start, end) {
+        var range = []
+        for (var i = start; i < end; i++) {
+            range.push(i);
+        }
+        return range;
+    }
+
+    function combinations(nums, order) {
+        if (order == 0) {
+            return [[]];
+        } else if (order > nums.length) {
+            return [];
+        } else {
+            var withFirst = map(combinations(nums.slice(1), order - 1), function(combo) {
+                return [nums[0]].concat(combo);
+            });
+            var withoutFirst = combinations(nums.slice(1), order);
+            return withFirst.concat(withoutFirst);
+        }
+    }
 
     function isBetween(val, start, end) {
         return start < val && val < end;
@@ -34,14 +60,11 @@
     }
 
     function collide(scene) {
-        var indexes = [];
-        for (var i = 0; i < scene.length; i++) {
-            indexes.push(i);
-        }
+        var indexes = range(0, scene.length);
 
-        var combos = combinations(indexes);
+        var combos = combinations(indexes, 2);
 
-        for (i = 0; i < combos.length; i++) {
+        for (var i = 0; i < combos.length; i++) {
             var o1 = scene[combos[i][0]];
             var o2 = scene[combos[i][1]];
 
