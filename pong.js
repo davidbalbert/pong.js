@@ -133,7 +133,7 @@
             return {
                 x: b.x,
                 y: a.y,
-                width: a.x + a.w - b.x,
+                width: a.x + a.width - b.x,
                 height: a.height
             };
         } else if (isBetweenInclusive(a.x + a.width, b.x, b.x + b.width) &&
