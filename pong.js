@@ -256,9 +256,15 @@
         boardHeight = canvas.height;
         boardWidth = canvas.width;
 
-        var ball = new Ball(50, 70, 1, 1);
         var leftPaddle = new Paddle("left");
         var rightPaddle = new Paddle("right");
+
+        var ball;
+        if (Math.random() > 0.5) {
+            ball = new Ball(leftPaddle.width, Math.random() * (boardHeight - BALL_SIZE), 1, 1);
+        } else {
+            ball = new Ball(boardWidth - 2 * rightPaddle.width - 1, Math.random() * (boardHeight - BALL_SIZE), -1, 1);
+        }
         var scene = [ball, leftPaddle, rightPaddle];
 
         setInterval(function() {
