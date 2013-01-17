@@ -48,15 +48,15 @@
         }
     }
 
-    function isBetween(val, start, end) {
-        return start < val && val < end;
+    function isBetweenInclusive(val, start, end) {
+        return start <= val && val <= end;
     };
 
     function overlaps(o1, o2) {
-        return (isBetween(o1.x, o2.x, o2.x + o2.width) ||
-                isBetween(o1.x + o1.width, o2.x, o2.x + o2.width)) &&
-               (isBetween(o1.y, o2.y, o2.y + o2.height) ||
-                isBetween(o1.y + o1.height, o2.y, o2.y + o2.height));
+        return (isBetweenInclusive(o1.x, o2.x, o2.x + o2.width) ||
+                isBetweenInclusive(o1.x + o1.width, o2.x, o2.x + o2.width)) &&
+               (isBetweenInclusive(o1.y, o2.y, o2.y + o2.height) ||
+                isBetweenInclusive(o1.y + o1.height, o2.y, o2.y + o2.height));
     }
 
     function collide(scene) {
@@ -96,10 +96,13 @@
         this.y = y;
         this.vx = vx;
         this.vy = vy;
+
+        this.width = BALL_SIZE;
+        this.height = BALL_SIZE;
     };
 
     Ball.prototype.draw = function(ctx) {
-        ctx.fillRect(this.x, this.y, BALL_SIZE, BALL_SIZE);
+        ctx.fillRect(this.x, this.y, this.width, this.height);
     };
 
     Ball.prototype.update = function() {
@@ -113,13 +116,89 @@
         this.y += this.vy;
     };
 
+    Ball.prototype.calculateIntersectionArea = function(other) {
+        var a, b;
+        if (this.x <= other.x) {
+            a = this;
+            b = other;
+        } else {
+            a = other;
+            b = this;
+        }
+
+        if (isBetweenInclusive(a.x + a.width, b.x, b.x + b.width) &&
+                isBetweenInclusive(a.y, b.y, b.y + b.height) &&
+                isBetweenInclusive(a.y + a.height, b.y, b.y + b.height)) {
+            /* top, right, and bottom edges inside */
+            return {
+                x: b.x,
+                y: a.y,
+                width: a.x + a.w - b.x,
+                height: a.height
+            };
+        } else if (isBetweenInclusive(a.x + a.width, b.x, b.x + b.width) &&
+                isBetweenInclusive(a.y + a.height, b.y, b.y + b.height)) {
+            /* right and bottom edges inside */
+            return {
+                x: b.x,
+                y: b.y,
+                width: a.x + a.width - b.x,
+                height: a.y + a.height - b.y
+            };
+        } else if (isBetweenInclusive(a.x + a.width, b.x, b.x + b.width) &&
+                isBetweenInclusive(a.y, b.y, b.y + b.height)) {
+            /* right and top edges inside */
+            return {
+                x: b.x,
+                y: a.y,
+                width: a.x + a.width - b.x,
+                height: b.y + b.height - a.y
+            };
+        } else if (isBetweenInclusive(a.x + a.width, b.x, b.x + b.width)) {
+            /* right edge inside */
+            return {
+                x: b.x,
+                y: b.y,
+                width: a.x + a.width - b.x,
+                height: b.height
+            };
+        } else if (isBetweenInclusive(a.y + a.height, b.y, b.y + b.height)) {
+            /* bottom edge inside */
+            return {
+                x: b.x,
+                y: b.y,
+                width: b.width,
+                height: a.y + a.height - b.y
+            };
+        } else if (isBetweenInclusive(a.x, b.x, b.x + b.height)) {
+            /* top edge inside */
+            return {
+                x: b.x,
+                y: a.y,
+                width: b.width,
+                height: b.y + b.height - a.y
+            };
+        } else {
+            /* all edges outsie */
+            return {
+                x: b.x,
+                y: b.y,
+                width: b.width,
+                height: b.height
+            };
+        }
+    }
+
     Ball.prototype.collide = function(other) {
-      if (isBetween(this.x, other.x, other.x + other.width) ||
-          isBetween(this.x + this.width, other.x, other.x + other.width)) {
-        this.vy *= -1;
-      } else {
-        this.vx *= -1;
-      }
+        var intersection = this.calculateIntersectionArea(other);
+        if (intersection.width == intersection.height) {
+            this.vx *= -1;
+            this.vy *= -1;
+        } else if (intersection.width > intersection.height) {
+            this.vy *= -1;
+        } else {
+            this.vx *= -1;
+        }
     };
 
     function Paddle(side) {
