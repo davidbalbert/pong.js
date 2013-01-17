@@ -190,10 +190,14 @@
     }
 
     Ball.prototype.collide = function(other) {
-        var intersection = this.calculateIntersectionArea(other);
-        if (intersection.width > intersection.height) {
-            this.vy *= -1;
-            this.y += this.vy * intersection.height;
+        var inter = this.calculateIntersectionArea(other);
+        if (inter.width > inter.height) {
+            if (inter.y + inter.height >= other.y + other.height) {
+                this.vy = 1;
+            } else {
+                this.vy = -1;
+            }
+            this.y += this.vy * inter.height;
 
             /* make sure we don't go through the board */
             if (this.y < 0) {
