@@ -3,7 +3,7 @@
 
     var FRAME_RATE = 120;
 
-    var BALL_SIZE = 25;
+    var BALL_SIZE = 20;
     var PADDLE_WIDTH = 20;
     var PADDLE_HEIGHT = 100;
     var PADDLE_FREQUENCY = 4;
@@ -191,11 +191,19 @@
 
     Ball.prototype.collide = function(other) {
         var intersection = this.calculateIntersectionArea(other);
-        if (intersection.width == intersection.height) {
-            this.vx *= -1;
+        if (intersection.width > intersection.height) {
             this.vy *= -1;
-        } else if (intersection.width > intersection.height) {
-            this.vy *= -1;
+            this.y += this.vy * intersection.height;
+
+            /* make sure we don't go through the board */
+            if (this.y < 0) {
+                this.y = 0;
+                other.y = this.height;
+            } else if (this.y + this.height > boardHeight) {
+                this.y = boardHeight - this.height;
+                other.y = this.y - other.height;
+            }
+
         } else {
             this.vx *= -1;
         }
@@ -206,9 +214,9 @@
         this.height = PADDLE_HEIGHT;
 
         if (side === "left") {
-            this.x = this.width;
+            this.x = 0;
         } else {
-            this.x = boardWidth - 2 * this.width;
+            this.x = boardWidth - this.width;
         }
 
         this.y = (boardHeight - this.height) / 2;
