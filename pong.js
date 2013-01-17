@@ -199,7 +199,7 @@
             }
             this.y += this.vy * inter.height;
 
-            /* make sure we don't go through the board */
+            /* make sure we don't go through the sides of the board */
             if (this.y < 0) {
                 this.y = 0;
                 other.y = this.height;
@@ -209,7 +209,12 @@
             }
 
         } else {
-            this.vx *= -1;
+            if (inter.x > other.x && inter.x < other.x + other.width) {
+                this.vx = 1;
+            } else {
+                this.vx = -1;
+            }
+            this.x += this.vx * inter.width;
         }
     };
 
