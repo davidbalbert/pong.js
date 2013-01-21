@@ -126,67 +126,51 @@
             b = this;
         }
 
+        var rect = {}
+        rect.x = b.x;
+
         if (isBetweenInclusive(a.x + a.width, b.x, b.x + b.width) &&
                 isBetweenInclusive(a.y, b.y, b.y + b.height) &&
                 isBetweenInclusive(a.y + a.height, b.y, b.y + b.height)) {
             /* top, right, and bottom edges inside */
-            return {
-                x: b.x,
-                y: a.y,
-                width: a.x + a.width - b.x,
-                height: a.height
-            };
+            rect.y = a.y;
+            rect.width = a.x + a.width - b.x;
+            rect.height = a.height;
         } else if (isBetweenInclusive(a.x + a.width, b.x, b.x + b.width) &&
                 isBetweenInclusive(a.y + a.height, b.y, b.y + b.height)) {
             /* right and bottom edges inside */
-            return {
-                x: b.x,
-                y: b.y,
-                width: a.x + a.width - b.x,
-                height: a.y + a.height - b.y
-            };
+            rect.y = b.y;
+            rect.width = a.x + a.width - b.x;
+            rect.height = a.y + a.height - b.y;
         } else if (isBetweenInclusive(a.x + a.width, b.x, b.x + b.width) &&
                 isBetweenInclusive(a.y, b.y, b.y + b.height)) {
             /* right and top edges inside */
-            return {
-                x: b.x,
-                y: a.y,
-                width: a.x + a.width - b.x,
-                height: b.y + b.height - a.y
-            };
+            rect.y = a.y;
+            rect.width = a.x + a.width - b.x;
+            rect.height = b.y + b.height - a.y;
         } else if (isBetweenInclusive(a.x + a.width, b.x, b.x + b.width)) {
             /* right edge inside */
-            return {
-                x: b.x,
-                y: b.y,
-                width: a.x + a.width - b.x,
-                height: b.height
-            };
+            rect.y = b.y;
+            rect.width = a.x + a.width - b.x;
+            rect.height = b.height;
         } else if (isBetweenInclusive(a.y + a.height, b.y, b.y + b.height)) {
             /* bottom edge inside */
-            return {
-                x: b.x,
-                y: b.y,
-                width: b.width,
-                height: a.y + a.height - b.y
-            };
+            rect.y = b.y;
+            rect.width = b.width;
+            rect.height = a.y + a.height - b.y;
         } else if (isBetweenInclusive(a.x, b.x, b.x + b.height)) {
             /* top edge inside */
-            return {
-                x: b.x,
-                y: a.y,
-                width: b.width,
-                height: b.y + b.height - a.y
-            };
+            rect.y = a.y;
+            rect.width = b.width;
+            rect.height = b.y + b.height - a.y;
         } else {
             /* all edges outsie */
-            return {
-                x: b.x,
-                y: b.y,
-                width: b.width,
-                height: b.height
-            };
+            rect.y = b.y;
+            rect.width = b.width;
+            rect.height = b.height;
         }
+
+        return rect;
     }
 
     Ball.prototype.collide = function(other) {
