@@ -248,39 +248,31 @@
         window.addEventListener("keydown", function(e) {
             switch(e.keyCode) {
             case 38:
-                if (rightPaddle.keyboardTimer) {
-                    clearInterval(rightPaddle.keyboardTimer);
-                }
-
-                rightPaddle.keyboardTimer = setInterval(function() {
-                    rightPaddle.moveUp();
-                }, PADDLE_FREQUENCY);
-                break;
             case 40:
                 if (rightPaddle.keyboardTimer) {
                     clearInterval(rightPaddle.keyboardTimer);
                 }
 
                 rightPaddle.keyboardTimer = setInterval(function() {
-                    rightPaddle.moveDown();
+                    if (e.keyCode == 38) {
+                        rightPaddle.moveUp();
+                    } else {
+                        rightPaddle.moveDown();
+                    }
                 }, PADDLE_FREQUENCY);
                 break;
             case 65:
-                if (leftPaddle.keyboardTimer) {
-                    clearInterval(leftPaddle.keyboardTimer);
-                }
-
-                leftPaddle.keyboardTimer = setInterval(function() {
-                    leftPaddle.moveUp();
-                }, PADDLE_FREQUENCY);
-                break;
             case 90:
                 if (leftPaddle.keyboardTimer) {
                     clearInterval(leftPaddle.keyboardTimer);
                 }
 
                 leftPaddle.keyboardTimer = setInterval(function() {
-                    leftPaddle.moveDown();
+                    if (e.keyCode == 65) {
+                        leftPaddle.moveUp();
+                    } else {
+                        leftPaddle.moveDown();
+                    }
                 }, PADDLE_FREQUENCY);
                 break;
             }
