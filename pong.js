@@ -8,6 +8,13 @@
     var PADDLE_HEIGHT = 100;
     var PADDLE_FREQUENCY = 4;
 
+    var KEYS = {
+        UP: 38,
+        DOWN: 40,
+        A: 65,
+        Z: 90
+    };
+
     var boardHeight;
     var boardWidth;
 
@@ -246,33 +253,39 @@
         rightPaddle.keyboardTimer = null;
 
         window.addEventListener("keydown", function(e) {
+            var func;
+
             switch(e.keyCode) {
-            case 38:
-            case 40:
+            case KEYS.UP:
+            case KEYS.DOWN:
                 if (rightPaddle.keyboardTimer) {
                     clearInterval(rightPaddle.keyboardTimer);
                 }
 
+                if (e.keyCode == KEYS.UP) {
+                    func = rightPaddle.moveUp;
+                } else {
+                    func = rightPaddle.moveDown;
+                }
+
                 rightPaddle.keyboardTimer = setInterval(function() {
-                    if (e.keyCode == 38) {
-                        rightPaddle.moveUp();
-                    } else {
-                        rightPaddle.moveDown();
-                    }
+                    func.call(rightPaddle);
                 }, PADDLE_FREQUENCY);
                 break;
-            case 65:
-            case 90:
+            case KEYS.A:
+            case KEYS.Z:
                 if (leftPaddle.keyboardTimer) {
                     clearInterval(leftPaddle.keyboardTimer);
                 }
 
+                if (e.keyCode == KEYS.A) {
+                    func = leftPaddle.moveUp;
+                } else {
+                    func = leftPaddle.moveDown;
+                }
+
                 leftPaddle.keyboardTimer = setInterval(function() {
-                    if (e.keyCode == 65) {
-                        leftPaddle.moveUp();
-                    } else {
-                        leftPaddle.moveDown();
-                    }
+                    func.call(leftPaddle);
                 }, PADDLE_FREQUENCY);
                 break;
             }
@@ -280,14 +293,14 @@
 
         window.addEventListener("keyup", function(e) {
             switch (e.keyCode) {
-            case 38:
-            case 40:
+            case KEYS.UP:
+            case KEYS.DOWN:
                 if (rightPaddle.keyboardTimer) {
                     clearInterval(rightPaddle.keyboardTimer);
                 }
                 break;
-            case 65:
-            case 90:
+            case KEYS.A:
+            case KEYS.Z:
                 if (leftPaddle.keyboardTimer) {
                     clearInterval(leftPaddle.keyboardTimer);
                 }
