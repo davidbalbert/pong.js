@@ -129,44 +129,29 @@
         var rect = {}
         rect.x = b.x;
 
-        if (isBetweenInclusive(a.x + a.width, b.x, b.x + b.width) &&
-                isBetweenInclusive(a.y, b.y, b.y + b.height) &&
-                isBetweenInclusive(a.y + a.height, b.y, b.y + b.height)) {
-            /* top, right, and bottom edges inside */
+        var topEdgeInside = isBetweenInclusive(a.y, b.y, b.y + b.height);
+        var rightEdgeInside = isBetweenInclusive(a.x + a.width, b.x, b.x + b.width);
+        var bottomEdgeInside = isBetweenInclusive(a.y + a.height, b.y, b.y + b.height);
+
+        if (topEdgeInside) {
             rect.y = a.y;
+        } else {
+            rect.y = b.y;
+        }
+
+        if (rightEdgeInside) {
             rect.width = a.x + a.width - b.x;
+        } else {
+            rect.width = b.width;
+        }
+
+        if (rightEdgeInside && topEdgeInside && bottomEdgeInside) {
             rect.height = a.height;
-        } else if (isBetweenInclusive(a.x + a.width, b.x, b.x + b.width) &&
-                isBetweenInclusive(a.y + a.height, b.y, b.y + b.height)) {
-            /* right and bottom edges inside */
-            rect.y = b.y;
-            rect.width = a.x + a.width - b.x;
+        } else if (bottomEdgeInside) {
             rect.height = a.y + a.height - b.y;
-        } else if (isBetweenInclusive(a.x + a.width, b.x, b.x + b.width) &&
-                isBetweenInclusive(a.y, b.y, b.y + b.height)) {
-            /* right and top edges inside */
-            rect.y = a.y;
-            rect.width = a.x + a.width - b.x;
-            rect.height = b.y + b.height - a.y;
-        } else if (isBetweenInclusive(a.x + a.width, b.x, b.x + b.width)) {
-            /* right edge inside */
-            rect.y = b.y;
-            rect.width = a.x + a.width - b.x;
-            rect.height = b.height;
-        } else if (isBetweenInclusive(a.y + a.height, b.y, b.y + b.height)) {
-            /* bottom edge inside */
-            rect.y = b.y;
-            rect.width = b.width;
-            rect.height = a.y + a.height - b.y;
-        } else if (isBetweenInclusive(a.x, b.x, b.x + b.height)) {
-            /* top edge inside */
-            rect.y = a.y;
-            rect.width = b.width;
+        } else if (topEdgeInside) {
             rect.height = b.y + b.height - a.y;
         } else {
-            /* all edges outsie */
-            rect.y = b.y;
-            rect.width = b.width;
             rect.height = b.height;
         }
 
