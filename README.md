@@ -4,7 +4,7 @@ Pong, drawn on a `<canvas>`.
 
 ## How to play
 
-Open `index.html` or go to http://dave.is/pong.js/. Up and down arrows move the right paddle. A and Z move the left paddle.
+Open `index.html`. Up and down arrows move the right paddle. A and Z move the left paddle.
 
 ## License
 
