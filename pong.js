@@ -212,6 +212,7 @@
             this.y -= 1;
         }
     };
+
     Paddle.prototype.moveDown = function() {
         if (this.y + this.height < boardHeight) {
             this.y += 1;
