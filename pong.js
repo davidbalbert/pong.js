@@ -253,41 +253,30 @@
         rightPaddle.keyboardTimer = null;
 
         window.addEventListener("keydown", function(e) {
-            var func;
+            if (e.keyCode == KEYS.UP || e.keyCode == KEYS.DOWN ||
+                    e.keyCode == KEYS.A || e.keyCode == KEYS.Z) {
+                var func;
+                var paddle;
 
-            switch(e.keyCode) {
-            case KEYS.UP:
-            case KEYS.DOWN:
-                if (rightPaddle.keyboardTimer) {
-                    clearInterval(rightPaddle.keyboardTimer);
-                }
-
-                if (e.keyCode == KEYS.UP) {
-                    func = rightPaddle.moveUp;
+                if (e.keyCode == KEYS.UP || e.keyCode == KEYS.DOWN) {
+                    paddle = rightPaddle;
                 } else {
-                    func = rightPaddle.moveDown;
+                    paddle = leftPaddle;
                 }
 
-                rightPaddle.keyboardTimer = setInterval(function() {
-                    func.call(rightPaddle);
-                }, PADDLE_FREQUENCY);
-                break;
-            case KEYS.A:
-            case KEYS.Z:
-                if (leftPaddle.keyboardTimer) {
-                    clearInterval(leftPaddle.keyboardTimer);
-                }
-
-                if (e.keyCode == KEYS.A) {
-                    func = leftPaddle.moveUp;
+                if (e.keyCode == KEYS.UP || e.keyCode == KEYS.A) {
+                    func = paddle.moveUp;
                 } else {
-                    func = leftPaddle.moveDown;
+                    func = paddle.moveDown;
                 }
 
-                leftPaddle.keyboardTimer = setInterval(function() {
-                    func.call(leftPaddle);
+                if (paddle.keyboardTimer) {
+                    clearInterval(paddle.keyboardTimer);
+                }
+
+                paddle.keyboardTimer = setInterval(function() {
+                    func.call(paddle);
                 }, PADDLE_FREQUENCY);
-                break;
             }
         });
 
