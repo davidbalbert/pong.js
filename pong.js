@@ -180,7 +180,7 @@
             } else {
                 this.vy = -1 * BALL_VELOCITY;
             }
-            this.y += this.vy / BALL_VELOCITY * inter.height;
+            this.y += this.vy / Math.abs(this.vy) * inter.height;
 
             /* make sure we don't go through the sides of the board */
             if (this.y < 0) {
@@ -197,7 +197,7 @@
             } else {
                 this.vx = -1 * BALL_VELOCITY;
             }
-            this.x += this.vx / BALL_VELOCITY * inter.width;
+            this.x += this.vx / Math.abs(this.vx) * inter.width;
         }
     };
 
