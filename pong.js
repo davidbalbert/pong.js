@@ -1,12 +1,26 @@
 (function() {
     "use strict";
 
+    var requestAnimationFrame = window.requestAnimationFrame ||
+                                window.mozRequestAnimationFrame ||
+                                window.webkitRequestAnimationFrame ||
+                                window.msRequestAnimationFrame;
+
+    window.requestAnimationFrame = requestAnimationFrame;
+
+    if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame = function(func, element) {
+            setTimeout(func, 10);
+        };
+    }
+
+
     var BALL_SIZE = 20;
-    var BALL_VELOCITY = 100; // px/second
+    var BALL_VELOCITY = 250; // px/second
 
     var PADDLE_WIDTH = 20;
     var PADDLE_HEIGHT = 100;
-    var PADDLE_VELOCITY = 200; // px/second
+    var PADDLE_VELOCITY = 400; // px/second
 
     var KEYS = {
         UP: 38,
@@ -117,9 +131,7 @@
     };
 
     Ball.prototype.draw = function(ctx) {
-        ctx.fillStyle = "rgb(255,0,0)";
         ctx.fillRect(this.x, this.y, this.width, this.height);
-        ctx.fillStyle = "rgb(0,0,0)";
     };
 
     Ball.prototype.update = function(deltaT) {
@@ -287,10 +299,12 @@
         var scene = [ball, leftPaddle, rightPaddle];
 
         lastUpdatedAt = Date.now();
-        setInterval(function() {
+        function gameLoop() {
             update(scene);
             draw(ctx, scene);
-        }, 10);
+            requestAnimationFrame(gameLoop, canvas);
+        };
+        requestAnimationFrame(gameLoop, canvas);
 
         window.addEventListener("keydown", function(e) {
             pressedKeys[e.keyCode] = true;
