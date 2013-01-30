@@ -91,11 +91,11 @@
         var deltaT = (now - lastUpdatedAt) / 1000;
         lastUpdatedAt = now;
 
-        collide(scene);
-
         for (var i = 0; i < scene.length; i++) {
             scene[i].update(deltaT);
         }
+
+        collide(scene);
     };
 
     function draw(ctx, scene) {
@@ -117,7 +117,9 @@
     };
 
     Ball.prototype.draw = function(ctx) {
+        ctx.fillStyle = "rgb(255,0,0)";
         ctx.fillRect(this.x, this.y, this.width, this.height);
+        ctx.fillStyle = "rgb(0,0,0)";
     };
 
     Ball.prototype.update = function(deltaT) {
@@ -249,7 +251,16 @@
         }
     };
 
-    Paddle.prototype.collide = function(other) {};
+    Paddle.prototype.collide = function(ball) {
+        // if the ball is against the wall, the paddle should not be forced to
+        // stop moving. It might be nicer if the wall was just another
+        // collidable, but fixed entity.
+        if (ball.y <= 0 && this.y < ball.height) {
+            this.y = ball.height;
+        } else if (ball.y + ball.height >= boardHeight && this.y + this.height > ball.y) {
+            this.y = boardHeight - ball.height - this.height;
+        }
+    };
 
     window.addEventListener("load", function() {
         var canvas = document.getElementById("c");
