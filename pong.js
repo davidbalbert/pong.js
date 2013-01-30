@@ -60,7 +60,7 @@
     }
 
     function combinations(nums, order) {
-        if (order == 0) {
+        if (order === 0) {
             return [[]];
         } else if (order > nums.length) {
             return [];
