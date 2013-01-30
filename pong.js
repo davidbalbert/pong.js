@@ -138,10 +138,10 @@
         this.x += this.vx * deltaT;
         this.y += this.vy * deltaT;
 
-        this.insureInsideBounds();
+        this.ensureInsideBounds();
     };
 
-    Ball.prototype.insureInsideBounds = function() {
+    Ball.prototype.ensureInsideBounds = function() {
         if (this.x < 0) {
             this.x = 0;
             this.vx *= -1;
@@ -219,7 +219,7 @@
             this.x += this.vx / Math.abs(this.vx) * inter.width;
         }
 
-        this.insureInsideBounds();
+        this.ensureInsideBounds();
     };
 
     function Paddle(side) {
