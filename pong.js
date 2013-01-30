@@ -121,6 +121,9 @@
     };
 
     Ball.prototype.update = function(deltaT) {
+        this.x += this.vx * deltaT;
+        this.y += this.vy * deltaT;
+
         if (this.x < 0) {
             this.x = 0;
             this.vx *= -1;
@@ -136,9 +139,6 @@
             this.y = boardHeight - this.height;
             this.vy *= -1;
         }
-
-        this.x += this.vx * deltaT;
-        this.y += this.vy * deltaT;
     };
 
     Ball.prototype.calculateIntersectionArea = function(other) {
@@ -192,15 +192,6 @@
                 this.vy = -1 * BALL_VELOCITY;
             }
             this.y += this.vy / Math.abs(this.vy) * inter.height;
-
-            /* make sure we don't go through the sides of the board */
-            if (this.y < 0) {
-                this.y = 0;
-                other.y = this.height;
-            } else if (this.y + this.height > boardHeight) {
-                this.y = boardHeight - this.height;
-                other.y = this.y - other.height;
-            }
 
         } else {
             if (inter.x > other.x && inter.x < other.x + other.width) {
