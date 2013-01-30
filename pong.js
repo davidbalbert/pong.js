@@ -121,10 +121,19 @@
     };
 
     Ball.prototype.update = function(deltaT) {
-        if (this.x <= 0 || this.x + BALL_SIZE >= boardWidth) {
+        if (this.x < 0) {
+            this.x = 0;
+            this.vx *= -1;
+        } else if (this.x + this.width > boardWidth) {
+            this.x = boardWidth - this.width;
             this.vx *= -1;
         }
-        if (this.y <= 0 || this.y + BALL_SIZE >= boardHeight) {
+
+        if (this.y < 0) {
+            this.y = 0;
+            this.vy *= -1;
+        } else if (this.y + this.height > boardHeight) {
+            this.y = boardHeight - this.height;
             this.vy *= -1;
         }
 
@@ -229,6 +238,7 @@
 
     Paddle.prototype.update = function(deltaT) {
         this.vy = 0;
+
         if (pressedKeys[this.upKey]) {
             this.vy -= PADDLE_VELOCITY;
         }
