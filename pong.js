@@ -6,7 +6,7 @@
 
     var PADDLE_WIDTH = 20;
     var PADDLE_HEIGHT = 100;
-    var PADDLE_VELOCITY = 300; // px/second
+    var PADDLE_VELOCITY = 200; // px/second
 
     var KEYS = {
         UP: 38,
@@ -126,6 +126,10 @@
         this.x += this.vx * deltaT;
         this.y += this.vy * deltaT;
 
+        this.insureInsideBounds();
+    };
+
+    Ball.prototype.insureInsideBounds = function() {
         if (this.x < 0) {
             this.x = 0;
             this.vx *= -1;
@@ -194,7 +198,6 @@
                 this.vy = -1 * BALL_VELOCITY;
             }
             this.y += this.vy / Math.abs(this.vy) * inter.height;
-
         } else {
             if (inter.x > other.x && inter.x < other.x + other.width) {
                 this.vx = BALL_VELOCITY;
@@ -203,6 +206,8 @@
             }
             this.x += this.vx / Math.abs(this.vx) * inter.width;
         }
+
+        this.insureInsideBounds();
     };
 
     function Paddle(side) {
@@ -278,13 +283,14 @@
         } else {
             ball = new Ball(boardWidth - 2 * rightPaddle.width - 1, Math.random() * (boardHeight - BALL_SIZE), -1 * BALL_VELOCITY, BALL_VELOCITY);
         }
+
         var scene = [ball, leftPaddle, rightPaddle];
 
         lastUpdatedAt = Date.now();
         setInterval(function() {
             update(scene);
             draw(ctx, scene);
-        }, 20);
+        }, 10);
 
         window.addEventListener("keydown", function(e) {
             pressedKeys[e.keyCode] = true;
