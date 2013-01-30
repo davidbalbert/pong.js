@@ -1,9 +1,9 @@
 (function() {
     "use strict";
 
-    var FRAME_RATE = 120;
-
     var BALL_SIZE = 20;
+    var BALL_VELOCITY = 100; // px/second
+
     var PADDLE_WIDTH = 20;
     var PADDLE_HEIGHT = 100;
     var PADDLE_FREQUENCY = 4;
@@ -17,6 +17,8 @@
 
     var boardHeight;
     var boardWidth;
+
+    var lastUpdatedAt;
 
     function reduce(acc, arr, f) {
         for (var i = 0; i < arr.length; i++) {
@@ -83,10 +85,14 @@
     };
 
     function update(scene) {
+        var now = Date.now();
+        var deltaT = (now - lastUpdatedAt) / 1000;
+        lastUpdatedAt = now;
+
         collide(scene);
 
         for (var i = 0; i < scene.length; i++) {
-            scene[i].update();
+            scene[i].update(deltaT);
         }
     };
 
@@ -112,15 +118,16 @@
         ctx.fillRect(this.x, this.y, this.width, this.height);
     };
 
-    Ball.prototype.update = function() {
+    Ball.prototype.update = function(deltaT) {
         if (this.x <= 0 || this.x + BALL_SIZE >= boardWidth) {
             this.vx *= -1;
         }
         if (this.y <= 0 || this.y + BALL_SIZE >= boardHeight) {
             this.vy *= -1;
         }
-        this.x += this.vx;
-        this.y += this.vy;
+
+        this.x += this.vx * deltaT;
+        this.y += this.vy * deltaT;
     };
 
     Ball.prototype.calculateIntersectionArea = function(other) {
@@ -169,11 +176,11 @@
         var inter = this.calculateIntersectionArea(other);
         if (inter.width > inter.height) {
             if (inter.y + inter.height >= other.y + other.height) {
-                this.vy = 1;
+                this.vy = BALL_VELOCITY;
             } else {
-                this.vy = -1;
+                this.vy = -1 * BALL_VELOCITY;
             }
-            this.y += this.vy * inter.height;
+            this.y += this.vy / BALL_VELOCITY * inter.height;
 
             /* make sure we don't go through the sides of the board */
             if (this.y < 0) {
@@ -186,11 +193,11 @@
 
         } else {
             if (inter.x > other.x && inter.x < other.x + other.width) {
-                this.vx = 1;
+                this.vx = BALL_VELOCITY;
             } else {
-                this.vx = -1;
+                this.vx = -1 * BALL_VELOCITY;
             }
-            this.x += this.vx * inter.width;
+            this.x += this.vx / BALL_VELOCITY * inter.width;
         }
     };
 
@@ -238,16 +245,17 @@
 
         var ball;
         if (Math.random() > 0.5) {
-            ball = new Ball(leftPaddle.width, Math.random() * (boardHeight - BALL_SIZE), 1, 1);
+            ball = new Ball(leftPaddle.width, Math.random() * (boardHeight - BALL_SIZE), BALL_VELOCITY, BALL_VELOCITY);
         } else {
-            ball = new Ball(boardWidth - 2 * rightPaddle.width - 1, Math.random() * (boardHeight - BALL_SIZE), -1, 1);
+            ball = new Ball(boardWidth - 2 * rightPaddle.width - 1, Math.random() * (boardHeight - BALL_SIZE), -1 * BALL_VELOCITY, BALL_VELOCITY);
         }
         var scene = [ball, leftPaddle, rightPaddle];
 
+        lastUpdatedAt = Date.now();
         setInterval(function() {
             update(scene);
             draw(ctx, scene);
-        }, 1000 / FRAME_RATE);
+        }, 20);
 
         leftPaddle.keyboardTimer = null;
         rightPaddle.keyboardTimer = null;
