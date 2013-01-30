@@ -6,7 +6,7 @@
 
     var PADDLE_WIDTH = 20;
     var PADDLE_HEIGHT = 100;
-    var PADDLE_FREQUENCY = 4;
+    var PADDLE_VELOCITY = 300; // px/second
 
     var KEYS = {
         UP: 38,
@@ -14,6 +14,8 @@
         A: 65,
         Z: 90
     };
+
+    var pressedKeys = {};
 
     var boardHeight;
     var boardWidth;
@@ -207,31 +209,46 @@
 
         if (side === "left") {
             this.x = 0;
+            this.upKey = KEYS.A;
+            this.downKey = KEYS.Z;
         } else {
             this.x = boardWidth - this.width;
+            this.upKey = KEYS.UP;
+            this.downKey = KEYS.DOWN;
         }
 
         this.y = (boardHeight - this.height) / 2;
+
+        this.vy = 0;
+        this.vx = 0;
     };
 
     Paddle.prototype.draw = function(ctx) {
         ctx.fillRect(this.x, this.y, PADDLE_WIDTH, PADDLE_HEIGHT);
     };
 
-    Paddle.prototype.update = function() {};
+    Paddle.prototype.update = function(deltaT) {
+        this.vy = 0;
+        if (pressedKeys[this.upKey]) {
+            this.vy -= PADDLE_VELOCITY;
+        }
+
+        if (pressedKeys[this.downKey]) {
+            this.vy += PADDLE_VELOCITY;
+        }
+
+        this.y += this.vy * deltaT;
+
+        if (this.y < 0) {
+            this.y = 0;
+        }
+
+        if (this.y + this.height > boardHeight) {
+            this.y = boardHeight - this.height;
+        }
+    };
+
     Paddle.prototype.collide = function(other) {};
-
-    Paddle.prototype.moveUp = function() {
-        if (this.y > 0) {
-            this.y -= 1;
-        }
-    };
-
-    Paddle.prototype.moveDown = function() {
-        if (this.y + this.height < boardHeight) {
-            this.y += 1;
-        }
-    };
 
     window.addEventListener("load", function() {
         var canvas = document.getElementById("c");
@@ -240,8 +257,8 @@
         boardHeight = canvas.height;
         boardWidth = canvas.width;
 
-        var leftPaddle = new Paddle("left");
-        var rightPaddle = new Paddle("right");
+        var leftPaddle = new Paddle("left", PADDLE_VELOCITY);
+        var rightPaddle = new Paddle("right", PADDLE_VELOCITY);
 
         var ball;
         if (Math.random() > 0.5) {
@@ -257,52 +274,12 @@
             draw(ctx, scene);
         }, 20);
 
-        leftPaddle.keyboardTimer = null;
-        rightPaddle.keyboardTimer = null;
-
         window.addEventListener("keydown", function(e) {
-            if (e.keyCode == KEYS.UP || e.keyCode == KEYS.DOWN ||
-                    e.keyCode == KEYS.A || e.keyCode == KEYS.Z) {
-                var func;
-                var paddle;
-
-                if (e.keyCode == KEYS.UP || e.keyCode == KEYS.DOWN) {
-                    paddle = rightPaddle;
-                } else {
-                    paddle = leftPaddle;
-                }
-
-                if (e.keyCode == KEYS.UP || e.keyCode == KEYS.A) {
-                    func = paddle.moveUp;
-                } else {
-                    func = paddle.moveDown;
-                }
-
-                if (paddle.keyboardTimer) {
-                    clearInterval(paddle.keyboardTimer);
-                }
-
-                paddle.keyboardTimer = setInterval(function() {
-                    func.call(paddle);
-                }, PADDLE_FREQUENCY);
-            }
+            pressedKeys[e.keyCode] = true;
         });
 
         window.addEventListener("keyup", function(e) {
-            switch (e.keyCode) {
-            case KEYS.UP:
-            case KEYS.DOWN:
-                if (rightPaddle.keyboardTimer) {
-                    clearInterval(rightPaddle.keyboardTimer);
-                }
-                break;
-            case KEYS.A:
-            case KEYS.Z:
-                if (leftPaddle.keyboardTimer) {
-                    clearInterval(leftPaddle.keyboardTimer);
-                }
-                break;
-            }
+            delete pressedKeys[e.keyCode];
         });
     });
 }());
