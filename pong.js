@@ -14,7 +14,6 @@
         };
     }
 
-
     var BALL_SIZE = 20;
     var BALL_VELOCITY = 250; // px/second
 
@@ -49,7 +48,6 @@
             return acc;
         });
     };
-
 
     function range(start, end) {
         var range = []
