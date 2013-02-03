@@ -298,14 +298,6 @@
 
         var scene = [ball, leftPaddle, rightPaddle];
 
-        lastUpdatedAt = Date.now();
-        function gameLoop() {
-            update(scene);
-            draw(ctx, scene);
-            requestAnimationFrame(gameLoop, canvas);
-        };
-        requestAnimationFrame(gameLoop, canvas);
-
         window.addEventListener("keydown", function(e) {
             pressedKeys[e.keyCode] = true;
         });
@@ -313,5 +305,13 @@
         window.addEventListener("keyup", function(e) {
             delete pressedKeys[e.keyCode];
         });
+
+        lastUpdatedAt = Date.now();
+        function gameLoop() {
+            update(scene);
+            draw(ctx, scene);
+            requestAnimationFrame(gameLoop, canvas);
+        };
+        requestAnimationFrame(gameLoop, canvas);
     });
 }());
