@@ -100,7 +100,8 @@
         }
     };
 
-    function update(scene, now) {
+    function update(scene) {
+        var now = Date.now();
         var deltaT = (now - lastUpdatedAt) / 1000;
         lastUpdatedAt = now;
 
@@ -306,8 +307,8 @@
         });
 
         lastUpdatedAt = Date.now();
-        function gameLoop(now) {
-            update(scene, now);
+        function gameLoop() {
+            update(scene);
             draw(ctx, scene);
             requestAnimationFrame(gameLoop, canvas);
         };
