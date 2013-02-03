@@ -129,7 +129,7 @@
     };
 
     Ball.prototype.draw = function(ctx) {
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        ctx.fillRect(Math.floor(this.x), Math.floor(this.y), this.width, this.height);
     };
 
     Ball.prototype.update = function(deltaT) {
@@ -241,7 +241,7 @@
     };
 
     Paddle.prototype.draw = function(ctx) {
-        ctx.fillRect(this.x, this.y, PADDLE_WIDTH, PADDLE_HEIGHT);
+        ctx.fillRect(Math.floor(this.x), Math.floor(this.y), PADDLE_WIDTH, PADDLE_HEIGHT);
     };
 
     Paddle.prototype.update = function(deltaT) {
