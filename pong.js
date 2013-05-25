@@ -34,8 +34,8 @@
 
     var pressedKeys = {};
 
-    var boardHeight;
-    var boardWidth;
+    var BOARD_HEIGHT;
+    var BOARD_WIDTH;
 
     function isBetweenInclusive(val, start, end) {
         return start <= val && val <= end;
@@ -64,7 +64,7 @@
     };
 
     function draw(ctx, scene) {
-        ctx.clearRect(0, 0, boardWidth, boardHeight);
+        ctx.clearRect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
 
         for (var i = 0; i < scene.length; i++) {
             scene[i].draw(ctx);
@@ -74,12 +74,12 @@
     function Ball() {
         if (Math.random() > 0.5) {
             this.x = PADDLE_WIDTH;
-            this.y = Math.random() * (boardHeight - BALL_SIZE);
+            this.y = Math.random() * (BOARD_HEIGHT - BALL_SIZE);
             this.vx = BALL_VELOCITY;
             this.vy = BALL_VELOCITY;
         } else {
-            this.x = boardWidth - 2 * PADDLE_WIDTH - 1;
-            this.y = Math.random() * (boardHeight - BALL_SIZE);
+            this.x = BOARD_WIDTH - 2 * PADDLE_WIDTH - 1;
+            this.y = Math.random() * (BOARD_HEIGHT - BALL_SIZE);
             this.vx = -1 * BALL_VELOCITY;
             this.vy = BALL_VELOCITY;
         }
@@ -103,16 +103,16 @@
         if (this.x < 0) {
             this.x = 0;
             this.vx *= -1;
-        } else if (this.x + this.width > boardWidth) {
-            this.x = boardWidth - this.width;
+        } else if (this.x + this.width > BOARD_WIDTH) {
+            this.x = BOARD_WIDTH - this.width;
             this.vx *= -1;
         }
 
         if (this.y < 0) {
             this.y = 0;
             this.vy *= -1;
-        } else if (this.y + this.height > boardHeight) {
-            this.y = boardHeight - this.height;
+        } else if (this.y + this.height > BOARD_HEIGHT) {
+            this.y = BOARD_HEIGHT - this.height;
             this.vy *= -1;
         }
     };
@@ -189,12 +189,12 @@
             this.upKey = KEYS.A;
             this.downKey = KEYS.Z;
         } else {
-            this.x = boardWidth - this.width;
+            this.x = BOARD_WIDTH - this.width;
             this.upKey = KEYS.UP;
             this.downKey = KEYS.DOWN;
         }
 
-        this.y = (boardHeight - this.height) / 2;
+        this.y = (BOARD_HEIGHT - this.height) / 2;
 
         this.vy = 0;
         this.vx = 0;
@@ -221,8 +221,8 @@
             this.y = 0;
         }
 
-        if (this.y + this.height > boardHeight) {
-            this.y = boardHeight - this.height;
+        if (this.y + this.height > BOARD_HEIGHT) {
+            this.y = BOARD_HEIGHT - this.height;
         }
     };
 
@@ -232,8 +232,8 @@
         // collidable, but fixed entity.
         if (ball.y <= 0 && this.y < ball.height) {
             this.y = ball.height;
-        } else if (ball.y + ball.height >= boardHeight && this.y + this.height > ball.y) {
-            this.y = boardHeight - ball.height - this.height;
+        } else if (ball.y + ball.height >= BOARD_HEIGHT && this.y + this.height > ball.y) {
+            this.y = BOARD_HEIGHT - ball.height - this.height;
         }
     };
 
@@ -241,8 +241,8 @@
         var canvas = document.getElementById("c");
         var ctx = canvas.getContext("2d");
 
-        boardHeight = canvas.height;
-        boardWidth = canvas.width;
+        BOARD_HEIGHT = canvas.height;
+        BOARD_WIDTH = canvas.width;
 
         var leftPaddle = new Paddle("left", PADDLE_VELOCITY);
         var rightPaddle = new Paddle("right", PADDLE_VELOCITY);
