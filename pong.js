@@ -6,6 +6,10 @@
                                 window.webkitRequestAnimationFrame ||
                                 window.msRequestAnimationFrame;
 
+  // nice polyfill for raf here: https://gist.github.com/paulirish/1579671
+  // includes a more complete fallback (supports cancelAnimationFrame,
+  // and more regular callback intervals)
+
     window.requestAnimationFrame = requestAnimationFrame;
 
     if (!window.requestAnimationFrame) {
