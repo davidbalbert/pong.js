@@ -1,18 +1,32 @@
 (function() {
     "use strict";
 
-    var requestAnimationFrame = window.requestAnimationFrame ||
-                                window.mozRequestAnimationFrame ||
-                                window.webkitRequestAnimationFrame ||
-                                window.msRequestAnimationFrame;
+    function setupRequestAnimationFrame() {
+        var lastTime = 0;
+        var vendors = ['ms', 'moz', 'webkit', 'o'];
+        for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+            window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+            window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
+                || window[vendors[x]+'CancelRequestAnimationFrame'];
+        }
 
-    window.requestAnimationFrame = requestAnimationFrame;
+        if (!window.requestAnimationFrame)
+            window.requestAnimationFrame = function(callback, element) {
+                var currTime = new Date().getTime();
+                var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+                var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+                                           timeToCall);
+                lastTime = currTime + timeToCall;
+                return id;
+            };
 
-    if (!window.requestAnimationFrame) {
-        window.requestAnimationFrame = function(func, element) {
-            setTimeout(func, 10);
-        };
-    }
+        if (!window.cancelAnimationFrame)
+            window.cancelAnimationFrame = function(id) {
+                clearTimeout(id);
+            };
+    };
+
+    var inputter = new Inputter();
 
     var BALL_SIZE = 20;
     var BALL_VELOCITY = 250; // px/second
@@ -28,48 +42,24 @@
         Z: 90
     };
 
-    var pressedKeys = {};
+    function Inputter() {
+        var pressedKeys = {};
 
-    var boardHeight;
-    var boardWidth;
-
-    var lastUpdatedAt;
-
-    function reduce(acc, arr, f) {
-        for (var i = 0; i < arr.length; i++) {
-            acc = f(acc, arr[i]);
-        }
-        return acc;
-    };
-
-    function map(arr, f) {
-        return reduce([], arr, function(acc, e) {
-            acc.push(f(e));
-            return acc;
+        window.addEventListener("keydown", function(e) {
+            pressedKeys[e.keyCode] = true;
         });
+
+        window.addEventListener("keyup", function(e) {
+            delete pressedKeys[e.keyCode];
+        });
+
+        this.isPressed = function(keyCode) {
+            return pressedKeys[keyCode] === true;
+        };
     };
 
-    function range(start, end) {
-        var range = []
-        for (var i = start; i < end; i++) {
-            range.push(i);
-        }
-        return range;
-    }
-
-    function combinations(nums, order) {
-        if (order === 0) {
-            return [[]];
-        } else if (order > nums.length) {
-            return [];
-        } else {
-            var withFirst = map(combinations(nums.slice(1), order - 1), function(combo) {
-                return [nums[0]].concat(combo);
-            });
-            var withoutFirst = combinations(nums.slice(1), order);
-            return withFirst.concat(withoutFirst);
-        }
-    }
+    var BOARD_HEIGHT;
+    var BOARD_WIDTH;
 
     function isBetweenInclusive(val, start, end) {
         return start <= val && val <= end;
@@ -83,46 +73,40 @@
     }
 
     function collide(scene) {
-        var indexes = range(0, scene.length);
-
-        var combos = combinations(indexes, 2);
-
-        for (var i = 0; i < combos.length; i++) {
-            var o1 = scene[combos[i][0]];
-            var o2 = scene[combos[i][1]];
-
-            if (overlaps(o1, o2)) {
-                o1.collide(o2);
-                o2.collide(o1);
+        for (var i = 0; i < scene.length; i++) {
+            for (var j = i; j < scene.length; j++) {
+                var o1 = scene[i];
+                var o2 = scene[j];
+                if (o1 !== o2) {
+                    if (overlaps(o1, o2)) {
+                        o1.collide(o2);
+                        o2.collide(o1);
+                    }
+                }
             }
         }
     };
 
-    function update(scene) {
-        var now = Date.now();
-        var deltaT = (now - lastUpdatedAt) / 1000;
-        lastUpdatedAt = now;
-
-        for (var i = 0; i < scene.length; i++) {
-            scene[i].update(deltaT);
-        }
-
-        collide(scene);
-    };
-
     function draw(ctx, scene) {
-        ctx.clearRect(0, 0, boardWidth, boardHeight);
+        ctx.clearRect(0, 0, BOARD_WIDTH, BOARD_HEIGHT);
 
         for (var i = 0; i < scene.length; i++) {
             scene[i].draw(ctx);
         }
     };
 
-    function Ball(x, y, vx, vy) {
-        this.x = x;
-        this.y = y;
-        this.vx = vx;
-        this.vy = vy;
+    function Ball() {
+        if (Math.random() > 0.5) {
+            this.x = PADDLE_WIDTH;
+            this.y = Math.random() * (BOARD_HEIGHT - BALL_SIZE);
+            this.vx = BALL_VELOCITY;
+            this.vy = BALL_VELOCITY;
+        } else {
+            this.x = BOARD_WIDTH - 2 * PADDLE_WIDTH - 1;
+            this.y = Math.random() * (BOARD_HEIGHT - BALL_SIZE);
+            this.vx = -1 * BALL_VELOCITY;
+            this.vy = BALL_VELOCITY;
+        }
 
         this.width = BALL_SIZE;
         this.height = BALL_SIZE;
@@ -143,16 +127,16 @@
         if (this.x < 0) {
             this.x = 0;
             this.vx *= -1;
-        } else if (this.x + this.width > boardWidth) {
-            this.x = boardWidth - this.width;
+        } else if (this.x + this.width > BOARD_WIDTH) {
+            this.x = BOARD_WIDTH - this.width;
             this.vx *= -1;
         }
 
         if (this.y < 0) {
             this.y = 0;
             this.vy *= -1;
-        } else if (this.y + this.height > boardHeight) {
-            this.y = boardHeight - this.height;
+        } else if (this.y + this.height > BOARD_HEIGHT) {
+            this.y = BOARD_HEIGHT - this.height;
             this.vy *= -1;
         }
     };
@@ -229,12 +213,12 @@
             this.upKey = KEYS.A;
             this.downKey = KEYS.Z;
         } else {
-            this.x = boardWidth - this.width;
+            this.x = BOARD_WIDTH - this.width;
             this.upKey = KEYS.UP;
             this.downKey = KEYS.DOWN;
         }
 
-        this.y = (boardHeight - this.height) / 2;
+        this.y = (BOARD_HEIGHT - this.height) / 2;
 
         this.vy = 0;
         this.vx = 0;
@@ -247,11 +231,11 @@
     Paddle.prototype.update = function(deltaT) {
         this.vy = 0;
 
-        if (pressedKeys[this.upKey]) {
+        if (inputter.isPressed(this.upKey)) {
             this.vy -= PADDLE_VELOCITY;
         }
 
-        if (pressedKeys[this.downKey]) {
+        if (inputter.isPressed(this.downKey)) {
             this.vy += PADDLE_VELOCITY;
         }
 
@@ -261,8 +245,8 @@
             this.y = 0;
         }
 
-        if (this.y + this.height > boardHeight) {
-            this.y = boardHeight - this.height;
+        if (this.y + this.height > BOARD_HEIGHT) {
+            this.y = BOARD_HEIGHT - this.height;
         }
     };
 
@@ -272,40 +256,38 @@
         // collidable, but fixed entity.
         if (ball.y <= 0 && this.y < ball.height) {
             this.y = ball.height;
-        } else if (ball.y + ball.height >= boardHeight && this.y + this.height > ball.y) {
-            this.y = boardHeight - ball.height - this.height;
+        } else if (ball.y + ball.height >= BOARD_HEIGHT && this.y + this.height > ball.y) {
+            this.y = BOARD_HEIGHT - ball.height - this.height;
         }
     };
 
     window.addEventListener("load", function() {
+        setupRequestAnimationFrame();
         var canvas = document.getElementById("c");
         var ctx = canvas.getContext("2d");
 
-        boardHeight = canvas.height;
-        boardWidth = canvas.width;
+        BOARD_HEIGHT = canvas.height;
+        BOARD_WIDTH = canvas.width;
 
         var leftPaddle = new Paddle("left", PADDLE_VELOCITY);
         var rightPaddle = new Paddle("right", PADDLE_VELOCITY);
-
-        var ball;
-        if (Math.random() > 0.5) {
-            ball = new Ball(leftPaddle.width, Math.random() * (boardHeight - BALL_SIZE), BALL_VELOCITY, BALL_VELOCITY);
-        } else {
-            ball = new Ball(boardWidth - 2 * rightPaddle.width - 1, Math.random() * (boardHeight - BALL_SIZE), -1 * BALL_VELOCITY, BALL_VELOCITY);
-        }
+        var ball = new Ball();
 
         var scene = [ball, leftPaddle, rightPaddle];
 
-        window.addEventListener("keydown", function(e) {
-            pressedKeys[e.keyCode] = true;
-        });
+        var lastUpdatedAt = new Date().getTime();
+        function update(scene) {
+            var now = new Date().getTime();
+            var deltaT = (now - lastUpdatedAt) / 1000;
+            lastUpdatedAt = now;
 
-        window.addEventListener("keyup", function(e) {
-            delete pressedKeys[e.keyCode];
-        });
+            for (var i = 0; i < scene.length; i++) {
+                scene[i].update(deltaT);
+            }
+        };
 
-        lastUpdatedAt = Date.now();
         function gameLoop() {
+            collide(scene);
             update(scene);
             draw(ctx, scene);
             requestAnimationFrame(gameLoop, canvas);
