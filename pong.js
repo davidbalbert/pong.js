@@ -71,11 +71,18 @@
         }
     };
 
-    function Ball(x, y, vx, vy) {
-        this.x = x;
-        this.y = y;
-        this.vx = vx;
-        this.vy = vy;
+    function Ball() {
+        if (Math.random() > 0.5) {
+            this.x = PADDLE_WIDTH;
+            this.y = Math.random() * (boardHeight - BALL_SIZE);
+            this.vx = BALL_VELOCITY;
+            this.vy = BALL_VELOCITY;
+        } else {
+            this.x = boardWidth - 2 * PADDLE_WIDTH - 1;
+            this.y = Math.random() * (boardHeight - BALL_SIZE);
+            this.vx = -1 * BALL_VELOCITY;
+            this.vy = BALL_VELOCITY;
+        }
 
         this.width = BALL_SIZE;
         this.height = BALL_SIZE;
@@ -239,13 +246,7 @@
 
         var leftPaddle = new Paddle("left", PADDLE_VELOCITY);
         var rightPaddle = new Paddle("right", PADDLE_VELOCITY);
-
-        var ball;
-        if (Math.random() > 0.5) {
-            ball = new Ball(leftPaddle.width, Math.random() * (boardHeight - BALL_SIZE), BALL_VELOCITY, BALL_VELOCITY);
-        } else {
-            ball = new Ball(boardWidth - 2 * rightPaddle.width - 1, Math.random() * (boardHeight - BALL_SIZE), -1 * BALL_VELOCITY, BALL_VELOCITY);
-        }
+        var ball = new Ball();
 
         var scene = [ball, leftPaddle, rightPaddle];
 
