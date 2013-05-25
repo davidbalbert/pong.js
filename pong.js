@@ -37,8 +37,6 @@
     var boardHeight;
     var boardWidth;
 
-    var lastUpdatedAt;
-
     function isBetweenInclusive(val, start, end) {
         return start <= val && val <= end;
     };
@@ -63,18 +61,6 @@
                 }
             }
         }
-    };
-
-    function update(scene) {
-        var now = new Date().getTime();
-        var deltaT = (now - lastUpdatedAt) / 1000;
-        lastUpdatedAt = now;
-
-        for (var i = 0; i < scene.length; i++) {
-            scene[i].update(deltaT);
-        }
-
-        collide(scene);
     };
 
     function draw(ctx, scene) {
@@ -271,7 +257,19 @@
             delete pressedKeys[e.keyCode];
         });
 
-        lastUpdatedAt = new Date().getTime();
+        var lastUpdatedAt = new Date().getTime();
+        function update(scene) {
+            var now = new Date().getTime();
+            var deltaT = (now - lastUpdatedAt) / 1000;
+            lastUpdatedAt = now;
+
+            for (var i = 0; i < scene.length; i++) {
+                scene[i].update(deltaT);
+            }
+
+            collide(scene);
+        };
+
         function gameLoop() {
             update(scene);
             draw(ctx, scene);
