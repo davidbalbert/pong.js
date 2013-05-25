@@ -26,6 +26,8 @@
             };
     };
 
+    var inputter = new Inputter();
+
     var BALL_SIZE = 20;
     var BALL_VELOCITY = 250; // px/second
 
@@ -40,7 +42,21 @@
         Z: 90
     };
 
-    var pressedKeys = {};
+    function Inputter() {
+        var pressedKeys = {};
+
+        window.addEventListener("keydown", function(e) {
+            pressedKeys[e.keyCode] = true;
+        });
+
+        window.addEventListener("keyup", function(e) {
+            delete pressedKeys[e.keyCode];
+        });
+
+        this.isPressed = function(keyCode) {
+            return pressedKeys[keyCode] === true;
+        };
+    };
 
     var BOARD_HEIGHT;
     var BOARD_WIDTH;
@@ -215,11 +231,11 @@
     Paddle.prototype.update = function(deltaT) {
         this.vy = 0;
 
-        if (pressedKeys[this.upKey]) {
+        if (inputter.isPressed(this.upKey)) {
             this.vy -= PADDLE_VELOCITY;
         }
 
-        if (pressedKeys[this.downKey]) {
+        if (inputter.isPressed(this.downKey)) {
             this.vy += PADDLE_VELOCITY;
         }
 
@@ -258,14 +274,6 @@
         var ball = new Ball();
 
         var scene = [ball, leftPaddle, rightPaddle];
-
-        window.addEventListener("keydown", function(e) {
-            pressedKeys[e.keyCode] = true;
-        });
-
-        window.addEventListener("keyup", function(e) {
-            delete pressedKeys[e.keyCode];
-        });
 
         var lastUpdatedAt = new Date().getTime();
         function update(scene) {
