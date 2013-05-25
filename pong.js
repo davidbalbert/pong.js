@@ -284,11 +284,10 @@
             for (var i = 0; i < scene.length; i++) {
                 scene[i].update(deltaT);
             }
-
-            collide(scene);
         };
 
         function gameLoop() {
+            collide(scene);
             update(scene);
             draw(ctx, scene);
             requestAnimationFrame(gameLoop, canvas);
