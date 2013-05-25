@@ -39,42 +39,6 @@
 
     var lastUpdatedAt;
 
-    function reduce(acc, arr, f) {
-        for (var i = 0; i < arr.length; i++) {
-            acc = f(acc, arr[i]);
-        }
-        return acc;
-    };
-
-    function map(arr, f) {
-        return reduce([], arr, function(acc, e) {
-            acc.push(f(e));
-            return acc;
-        });
-    };
-
-    function range(start, end) {
-        var range = []
-        for (var i = start; i < end; i++) {
-            range.push(i);
-        }
-        return range;
-    }
-
-    function combinations(nums, order) {
-        if (order === 0) {
-            return [[]];
-        } else if (order > nums.length) {
-            return [];
-        } else {
-            var withFirst = map(combinations(nums.slice(1), order - 1), function(combo) {
-                return [nums[0]].concat(combo);
-            });
-            var withoutFirst = combinations(nums.slice(1), order);
-            return withFirst.concat(withoutFirst);
-        }
-    }
-
     function isBetweenInclusive(val, start, end) {
         return start <= val && val <= end;
     };
