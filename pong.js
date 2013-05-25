@@ -66,7 +66,7 @@
     };
 
     function update(scene) {
-        var now = Date.now();
+        var now = new Date().getTime();
         var deltaT = (now - lastUpdatedAt) / 1000;
         lastUpdatedAt = now;
 
@@ -271,7 +271,7 @@
             delete pressedKeys[e.keyCode];
         });
 
-        lastUpdatedAt = Date.now();
+        lastUpdatedAt = new Date().getTime();
         function gameLoop() {
             update(scene);
             draw(ctx, scene);
