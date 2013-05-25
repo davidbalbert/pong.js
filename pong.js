@@ -87,17 +87,16 @@
     }
 
     function collide(scene) {
-        var indexes = range(0, scene.length);
-
-        var combos = combinations(indexes, 2);
-
-        for (var i = 0; i < combos.length; i++) {
-            var o1 = scene[combos[i][0]];
-            var o2 = scene[combos[i][1]];
-
-            if (overlaps(o1, o2)) {
-                o1.collide(o2);
-                o2.collide(o1);
+        for (var i = 0; i < scene.length; i++) {
+            for (var j = i; j < scene.length; j++) {
+                var o1 = scene[i];
+                var o2 = scene[j];
+                if (o1 !== o2) {
+                    if (overlaps(o1, o2)) {
+                        o1.collide(o2);
+                        o2.collide(o1);
+                    }
+                }
             }
         }
     };
